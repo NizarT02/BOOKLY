@@ -1,4 +1,3 @@
-
 import difflib
 import html
 import json
@@ -375,7 +374,16 @@ def add_search_history(query):
 
 def select_history_query(query):
     st.session_state.global_search = query
+    st.session_state.catalog_query = query   # PERBAIKAN: isi juga kolom cari di Katalog
     st.session_state.navigation = "Katalog Buku"
+
+
+def go_to_catalog():
+    """PERBAIKAN: dipanggil saat tombol Cari ditekan, arahkan ke Katalog Buku."""
+    q = st.session_state.get("global_search", "").strip()
+    if q:
+        st.session_state.catalog_query = q
+        st.session_state.navigation = "Katalog Buku"
 
 
 # ----------------------------- MATERI 4: DESKRIPSI GENRE BUKU
@@ -1082,7 +1090,8 @@ with search_btn_col:
     search_clicked = st.button(
         "⌕  Cari",
         use_container_width=True,
-        type="primary"
+        type="primary",
+        on_click=go_to_catalog   # PERBAIKAN: arahkan hasil ke Katalog Buku
     )
 
 if search_clicked and global_query.strip():
@@ -1286,9 +1295,10 @@ elif page == "Katalog Buku":
     f1, f2, f3 = st.columns([2, 1, 1])
 
     with f1:
+        # PERBAIKAN: parameter value=global_query dihapus, nilainya kini
+        # diisi lewat st.session_state.catalog_query (dari go_to_catalog).
         q = st.text_input(
             "Cari judul atau penulis",
-            value=global_query,
             key="catalog_query"
         )
 
